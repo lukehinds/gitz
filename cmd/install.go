@@ -22,7 +22,7 @@ import (
 	"encoding/asn1"
 	"encoding/pem"
 	"fmt"
-	"github.com/lukehinds/sget/pkg/utils"
+	"github.com/lukehinds/gitget/pkg/utils"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 	"io"

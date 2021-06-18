@@ -1,4 +1,4 @@
-module github.com/lukehinds/sget
+module github.com/lukehinds/gitget
 
 go 1.16
 

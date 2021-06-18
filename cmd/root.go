@@ -32,7 +32,7 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "sget",
+	Use:   "gitget",
 	Short: "A brief description of your application",
 	Long: `A longer description that spans multiple lines and likely contains
 examples and usage of using your application. For example:
@@ -56,7 +56,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.sget.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gitget.yaml)")
 	rootCmd.PersistentFlags().StringVar(&owner, "owner", "", "The owner (username or organization containing the repo")
 	rootCmd.PersistentFlags().StringVar(&repo, "repo", "", "The GitHub repository")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
@@ -79,9 +79,9 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".sget" (without extension).
+		// Search config in home directory with name ".gitget" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".sget")
+		viper.SetConfigName(".gitget")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

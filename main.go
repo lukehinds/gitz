@@ -15,7 +15,7 @@
 
 package main
 
-import "github.com/lukehinds/sget/cmd"
+import "github.com/lukehinds/gitget/cmd"
 
 func main() {
 	cmd.Execute()
