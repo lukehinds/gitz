@@ -44,6 +44,7 @@ func GetTree(ctx context.Context, client *github.Client, ref *github.Reference, 
 	// Load each file into the tree.
 	for _, fileArg := range strings.Split(sourceFiles, ",") {
 		file, content, err := getFileContent(fileArg)
+
 		if err != nil {
 			return nil, err
 		}

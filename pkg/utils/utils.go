@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -21,24 +20,23 @@ func StoreDir(timeStamp string) (string, error)  {
 }
 
 // Generate a temp directory prepended with .sigstore
-func TmpDir() (string, error)  {
-	dir, err := ioutil.TempDir("/tmp/", "")
-	if err != nil {
-		return "", err
-	}
-
-	err = os.Mkdir(dir + "/.sigstore", 0755)
-	if err != nil {
-		return "", err
-	}
-	return dir, nil
-}
+//func TmpDir() (string, error)  {
+//	dir, err := ioutil.TempDir("/tmp/", "")
+//	if err != nil {
+//		return "", err
+//	}
+//
+//	err = os.Mkdir(dir + "/.sigstore", 0755)
+//	if err != nil {
+//		return "", err
+//	}
+//	return dir, nil
+//}
 
 // Download files from rawurls
 // TODO: May want to replace this
 func DownloadFile(file string, url string) error {
 	// Get the data
-	fmt.Println(file)
 	resp, err := http.Get(url)
 	if err != nil {
 		return err

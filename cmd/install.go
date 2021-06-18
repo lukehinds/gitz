@@ -16,7 +16,6 @@
 package cmd
 
 import (
-	"context"
 	"crypto/ecdsa"
 	"crypto/sha256"
 	"crypto/x509"
@@ -25,6 +24,7 @@ import (
 	"fmt"
 	"github.com/lukehinds/sget/pkg/utils"
 	"github.com/spf13/viper"
+	"golang.org/x/oauth2"
 	"io"
 	"io/ioutil"
 	"log"
@@ -58,13 +58,23 @@ to quickly create a Cobra application.`,
 		owner := viper.GetString("owner")
 		repo := viper.GetString("repo")
 		pterm.Info.Println("Running sigstore's safeget crypto downloader")
-		tmpDir, err := utils.TmpDir()
-		if err != nil {
-			log.Fatal(err)
-		}
+
 		// lets see if we cannot use gh token and keep it for sign
-		ctx := context.Background()
-		ghClient := github.NewClient(nil)
+		// TODO Remove this
+		token := os.Getenv("GITHUB_AUTH_TOKEN")
+		if token == "" {
+			log.Fatal("unauthorized: No token present")
+		}
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: token},
+		)
+		tc := oauth2.NewClient(ctx, ts)
+
+		// Ontain instance of google/go-github client
+		ghClient := github.NewClient(tc)
+		//ctx := context.Background()
+		//ghClient := github.NewClient(nil)
+		// TODO remove this
 
 		getFiles, _ := pterm.DefaultSpinner.Start("Retrieving signed materials and target script for tag: ", tag)
 
@@ -72,6 +82,12 @@ to quickly create a Cobra application.`,
 		getLatestRelease, getLatestReleaseResp, err := ghClient.Repositories.GetLatestRelease(ctx, owner, repo)
 		if err != nil {
 			fmt.Errorf("Repositories.GetLatestRelease returned error: %v\n%v", err, getLatestReleaseResp.Body)
+		}
+
+		switch getLatestReleaseResp.StatusCode{
+		case 403:
+			//fmt.Println(err)
+			getFiles.Fail("GitHub rate limit active ", getLatestReleaseResp.Rate)
 		}
 
 		// Get the sha for the latest release commit
@@ -82,12 +98,14 @@ to quickly create a Cobra application.`,
 
 		// get the commit that was used as a tag against the release, this then allows us to iterate
 		// over the files in the release / commit
-		commits, resp, err := ghClient.Repositories.GetCommit(ctx, owner, repo, *release.TargetCommitish)
+		commits, getCommitresp, err := ghClient.Repositories.GetCommit(ctx, owner, repo, *release.TargetCommitish)
 		if err != nil {
 			getFiles.Fail(err)
+			//fmt.Println(err)
 		}
-		if resp.StatusCode != 200 {
+		if getCommitresp.StatusCode != 200 {
 			getFiles.Fail("Network connection failed with http code: ", resp.StatusCode)
+			//fmt.Println(err)
 		}
 
 		// Gather files we need for verification
@@ -100,16 +118,17 @@ to quickly create a Cobra application.`,
 			// we need these for being able to access them later
 			switch filepath.Ext(*changeCommits.Filename) {
 			case ".pem":
-				certName = filepath.Base(tmpDir + "/" + *changeCommits.Filename)
-			case ".sig":
-				sigName = filepath.Base(tmpDir + "/" + *changeCommits.Filename)
+				certName = "/tmp/" + filepath.Base(*changeCommits.Filename)
+			case ".bin":
+				sigName = "/tmp/" + filepath.Base(*changeCommits.Filename)
 			case ".sh":
-				scriptName = filepath.Base(tmpDir + "/" + *changeCommits.Filename)
+				scriptName = "/tmp/" + filepath.Base(*changeCommits.Filename)
 				scriptPrettyName = *changeCommits.Filename
 			}
-			err := utils.DownloadFile(tmpDir + "/" + filepath.Base(*changeCommits.Filename), *changeCommits.RawURL)
+			err := utils.DownloadFile("/tmp/" + filepath.Base(*changeCommits.Filename), *changeCommits.RawURL)
 			if err != nil {
 				getFiles.Fail(err)
+				//fmt.Println(err)
 			}
 		}
 
@@ -117,7 +136,7 @@ to quickly create a Cobra application.`,
 
 		// Verify the signature
 		verifySigning, _ := pterm.DefaultSpinner.Start("Performing signing verification  of " + scriptPrettyName)
-		pterm.Info.Println("found a sigstore signed identity trust root from: lhinds@redhat.com")
+
 		certFile, err := utils.ReadFile(certName)
 		if err != nil {
 			log.Fatal("certfile read error: ", err)
@@ -141,7 +160,7 @@ to quickly create a Cobra application.`,
 		// Read in the signature file
 		raw, err := ioutil.ReadFile(sigName)
 		if err != nil {
-			log.Fatalf("failed to read sig from %s: %s", "signature.sig", err)
+			log.Fatalf("failed to read sig from %s: %s", "signature.bin", err)
 		}
 
 		// Marshall out the signature file to asn1
@@ -170,9 +189,7 @@ to quickly create a Cobra application.`,
 		if err != nil {
 			log.Fatal(err)
 		}
-
-		// clean up by removing all files in temp directory
-		os.RemoveAll(tmpDir)
+		// TODO: clean up by removing all files in temp directory
 	},
 }
 

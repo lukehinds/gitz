@@ -177,7 +177,7 @@ to quickly create a Cobra application.`,
 		fmt.Println("Rekor entry successful. Index number: :", tlogEntry)
 
 		// dump signature to file
-		sigFile := fmt.Sprintf("%s/signature_%s.sig", storeDir, timeStamp)
+		sigFile := fmt.Sprintf("%s/signature_%s.bin", storeDir, timeStamp)
 		fulcioCert := fmt.Sprintf("%s/fulcio_cert_%s.pem", storeDir, timeStamp)
 
 		err = ioutil.WriteFile(sigFile, signature, 0644)
