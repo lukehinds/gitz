@@ -16,6 +16,7 @@
 package cmd
 
 import (
+	"encoding/base64"
 	"context"
 	"crypto/x509"
 	"encoding/pem"
@@ -174,8 +175,20 @@ var signCmd = &cobra.Command{
 		sigFile := fmt.Sprintf("%s/signature_%s.bin", storeDir, timeStamp)
 		fulcioCert := fmt.Sprintf("%s/fulcio_cert_%s.pem", storeDir, timeStamp)
 
-		err = os.WriteFile(sigFile, signature, 0644)
+
+		// convert signature to base64
+		sigBase64 := base64.StdEncoding.EncodeToString(signature)
+
+		f, err := os.Create(sigFile)
+
 		if err != nil {
+			fmt.Println(err)
+		}
+		defer f.Close()
+
+		_, err2 := f.WriteString(sigBase64)
+
+		if err2 != nil {
 			fmt.Println(err)
 		}
 

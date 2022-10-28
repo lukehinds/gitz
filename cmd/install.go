@@ -16,6 +16,7 @@
 package cmd
 
 import (
+	"encoding/base64"
 	"crypto/ecdsa"
 	"crypto/sha256"
 	"crypto/x509"
@@ -123,7 +124,6 @@ var installCmd = &cobra.Command{
 			err := utils.DownloadFile("/tmp/"+filepath.Base(*changeCommits.Filename), *changeCommits.RawURL)
 			if err != nil {
 				getFiles.Fail(err)
-				//fmt.Println(err)
 			}
 		}
 
@@ -158,9 +158,11 @@ var installCmd = &cobra.Command{
 			log.Fatalf("failed to read sig from %s: %s", "signature.bin", err)
 		}
 
+		sigDecode, _ := base64.StdEncoding.DecodeString(string(raw))
+
 		// Marshall out the signature file to asn1
 		sig := &ecdsaSig{}
-		_, err = asn1.Unmarshal(raw, sig)
+		_, err = asn1.Unmarshal(sigDecode, sig)
 		if err != nil {
 			log.Fatalf("invalid signature data")
 		}
@@ -177,9 +179,10 @@ var installCmd = &cobra.Command{
 			verifySigning.Success()
 		}
 
-		pterm.Info.Println("safeget will now handover to script execution of: " + scriptPrettyName)
+		pterm.Info.Println("gitz will now handover to script execution of: " + scriptPrettyName)
 
 		// Execute the script in question
+		fmt.Println("")
 		err = utils.ExecScript(scriptName)
 		if err != nil {
 			log.Fatal(err)
