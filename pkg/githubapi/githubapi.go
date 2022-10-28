@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/go-github/v35/github"
-	"io/ioutil"
+	"os"
 	"strings"
 	"time"
 )
@@ -18,11 +18,11 @@ func GetRef(ctx context.Context, client *github.Client, sourceOwner string, sour
 	}
 
 	if commitBranch == baseBranch {
-		return nil, errors.New("The commit branch does not exist but `-base-branch` is the same as `-commit-branch`")
+		return nil, errors.New("the commit branch does not exist but `-base-branch` is the same as `-commit-branch`")
 	}
 
 	if baseBranch == "" {
-		return nil, errors.New("The `-base-branch` should not be set to an empty string when the branch specified by `-commit-branch` does not exists")
+		return nil, errors.New("the `-base-branch` should not be set to an empty string when the branch specified by `-commit-branch` does not exists")
 	}
 
 	var baseRef *github.Reference
@@ -71,7 +71,7 @@ func getFileContent(fileArg string) (targetName string, b []byte, err error) {
 		targetName = files[1]
 	}
 
-	b, err = ioutil.ReadFile(localFile)
+	b, err = os.ReadFile(localFile)
 	return targetName, b, err
 }
 

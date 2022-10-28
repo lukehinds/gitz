@@ -23,7 +23,6 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 	"math/big"
 	"os"
@@ -154,7 +153,7 @@ var installCmd = &cobra.Command{
 		io.Copy(hash, in)
 
 		// Read in the signature file
-		raw, err := ioutil.ReadFile(sigName)
+		raw, err := os.ReadFile(sigName)
 		if err != nil {
 			log.Fatalf("failed to read sig from %s: %s", "signature.bin", err)
 		}
