@@ -21,7 +21,6 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -62,7 +61,7 @@ var signCmd = &cobra.Command{
 		timeStamp := strconv.FormatInt(now.UnixNano(), 10)
 
 		shellScript := viper.GetString("script")
-		payload, err := ioutil.ReadFile(shellScript)
+		payload, err := os.ReadFile(shellScript)
 		if err != nil {
 			return err
 		}
@@ -175,12 +174,12 @@ var signCmd = &cobra.Command{
 		sigFile := fmt.Sprintf("%s/signature_%s.bin", storeDir, timeStamp)
 		fulcioCert := fmt.Sprintf("%s/fulcio_cert_%s.pem", storeDir, timeStamp)
 
-		err = ioutil.WriteFile(sigFile, signature, 0644)
+		err = os.WriteFile(sigFile, signature, 0644)
 		if err != nil {
 			fmt.Println(err)
 		}
 
-		err = ioutil.WriteFile(fulcioCert, certPEM, 0644)
+		err = os.WriteFile(fulcioCert, certPEM, 0644)
 		if err != nil {
 			fmt.Println(err)
 		}

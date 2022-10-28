@@ -2,7 +2,6 @@ package utils
 
 import (
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -21,7 +20,7 @@ func StoreDir(timeStamp string) (string, error)  {
 
 // Generate a temp directory prepended with .sigstore
 //func TmpDir() (string, error)  {
-//	dir, err := ioutil.TempDir("/tmp/", "")
+//	dir, err := os.TempDir("/tmp/", "")
 //	if err != nil {
 //		return "", err
 //	}
@@ -65,7 +64,7 @@ func ReadFile(fileName string) ([]byte, error) {
 			panic(err)
 		}
 	}()
-	b, err := ioutil.ReadAll(file)
+	b, err := io.ReadAll(file)
 	if err != nil {
 		return nil, err
 	}
