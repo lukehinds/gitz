@@ -1,3 +1,3 @@
 #!/bin/bash
 
-echo -e "hello gitget"
+echo -e "hello gitz"

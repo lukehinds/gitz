@@ -21,10 +21,16 @@ import (
 	"encoding/pem"
 	"errors"
 	"fmt"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"strconv"
+	"time"
+
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/go-github/v35/github"
-	"github.com/lukehinds/gitget/pkg/githubapi"
-	"github.com/lukehinds/gitget/pkg/utils"
+	"github.com/lukehinds/gitz/pkg/githubapi"
+	"github.com/lukehinds/gitz/pkg/utils"
 	"github.com/sigstore/sigstore/pkg/generated/client/operations"
 	"github.com/sigstore/sigstore/pkg/httpclients"
 	"github.com/sigstore/sigstore/pkg/oauthflow"
@@ -33,11 +39,6 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"strconv"
-	"time"
 )
 
 var (
@@ -54,13 +55,8 @@ var supportedFileTypes = map[string]struct{}{
 // signCmd represents the sign command
 var signCmd = &cobra.Command{
 	Use:   "sign",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Sign a script using gitz",
+	Long: `Sign a script using gitz and store within a GitHub repository.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		now := time.Now()
 		timeStamp := strconv.FormatInt(now.UnixNano(), 10)
@@ -139,7 +135,6 @@ to quickly create a Cobra application.`,
 		clientPEM, rootPEM := pem.Decode([]byte(certResp.Payload))
 
 		certPEM := pem.EncodeToMemory(clientPEM)
-
 
 		rootBlock, _ := pem.Decode([]byte(rootPEM))
 		if rootBlock == nil {

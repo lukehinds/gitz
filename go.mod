@@ -1,4 +1,4 @@
-module github.com/lukehinds/gitget
+module github.com/lukehinds/gitz
 
 go 1.18
 
