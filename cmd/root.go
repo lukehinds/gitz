@@ -17,29 +17,25 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 )
 
 var (
-	cfgFile    string
-	owner string
-	repo  string
+	cfgFile string
+	owner   string
+	repo    string
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gitget",
-	Short: "A brief description of your application",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Use:   "gitz",
+	Short: "gitz, secure script signing and retrieval",
+	Long: `gitz is a tool for signing scripts and retrieving them from a remote repository.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -56,7 +52,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gitget.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gitz.yaml)")
 	rootCmd.PersistentFlags().StringVar(&owner, "owner", "", "The owner (username or organization containing the repo")
 	rootCmd.PersistentFlags().StringVar(&repo, "repo", "", "The GitHub repository")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
@@ -79,9 +75,9 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".gitget" (without extension).
+		// Search config in home directory with name ".gitz" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".gitget")
+		viper.SetConfigName(".gitz")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

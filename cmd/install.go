@@ -22,15 +22,16 @@ import (
 	"encoding/asn1"
 	"encoding/pem"
 	"fmt"
-	"github.com/lukehinds/gitget/pkg/utils"
-	"github.com/spf13/viper"
-	"golang.org/x/oauth2"
 	"io"
 	"io/ioutil"
 	"log"
 	"math/big"
 	"os"
 	"path/filepath"
+
+	"github.com/lukehinds/gitz/pkg/utils"
+	"github.com/spf13/viper"
+	"golang.org/x/oauth2"
 
 	"github.com/google/go-github/v35/github"
 	"github.com/pterm/pterm"
@@ -46,18 +47,13 @@ type ecdsaSig struct {
 // installCmd represents the install command
 var installCmd = &cobra.Command{
 	Use:   "install",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Short: "Gitz install a script",
+	Long: `Securely retrieve and install a script from a GitHub repository.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		tag := viper.GetString("tag")
 		owner := viper.GetString("owner")
 		repo := viper.GetString("repo")
-		pterm.Info.Println("Running sigstore's safeget crypto downloader")
+		pterm.Info.Println("Running gitz crypto downloader")
 
 		// lets see if we cannot use gh token and keep it for sign
 		// TODO Remove this
@@ -84,7 +80,7 @@ to quickly create a Cobra application.`,
 			fmt.Errorf("Repositories.GetLatestRelease returned error: %v\n%v", err, getLatestReleaseResp.Body)
 		}
 
-		switch getLatestReleaseResp.StatusCode{
+		switch getLatestReleaseResp.StatusCode {
 		case 403:
 			//fmt.Println(err)
 			getFiles.Fail("GitHub rate limit active ", getLatestReleaseResp.Rate)
@@ -125,7 +121,7 @@ to quickly create a Cobra application.`,
 				scriptName = "/tmp/" + filepath.Base(*changeCommits.Filename)
 				scriptPrettyName = *changeCommits.Filename
 			}
-			err := utils.DownloadFile("/tmp/" + filepath.Base(*changeCommits.Filename), *changeCommits.RawURL)
+			err := utils.DownloadFile("/tmp/"+filepath.Base(*changeCommits.Filename), *changeCommits.RawURL)
 			if err != nil {
 				getFiles.Fail(err)
 				//fmt.Println(err)
@@ -144,7 +140,7 @@ to quickly create a Cobra application.`,
 
 		// Extract the public key from the signing cert as we need this to verify
 		block, _ := pem.Decode(certFile)
-		var cert* x509.Certificate
+		var cert *x509.Certificate
 		cert, _ = x509.ParseCertificate(block.Bytes)
 		ecdsaPublicKey := cert.PublicKey.(*ecdsa.PublicKey)
 
