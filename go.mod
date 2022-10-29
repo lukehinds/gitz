@@ -1,4 +1,4 @@
-module github.com/lukehinds/gitz
+module github.com/lukehinds/sap
 
 go 1.18
 

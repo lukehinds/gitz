@@ -16,11 +16,11 @@
 package cmd
 
 import (
-	"encoding/base64"
 	"crypto/ecdsa"
 	"crypto/sha256"
 	"crypto/x509"
 	"encoding/asn1"
+	"encoding/base64"
 	"encoding/pem"
 	"fmt"
 	"io"
@@ -29,7 +29,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/lukehinds/gitz/pkg/utils"
+	"github.com/lukehinds/sap/pkg/utils"
 	"github.com/spf13/viper"
 	"golang.org/x/oauth2"
 
@@ -47,13 +47,13 @@ type ecdsaSig struct {
 // installCmd represents the install command
 var installCmd = &cobra.Command{
 	Use:   "install",
-	Short: "Gitz install a script",
-	Long: `Securely retrieve and install a script from a GitHub repository.`,
+	Short: "sap install a script",
+	Long:  `Securely retrieve and install a script from a GitHub repository.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		tag := viper.GetString("tag")
 		owner := viper.GetString("owner")
 		repo := viper.GetString("repo")
-		pterm.Info.Println("Running gitz crypto downloader")
+		pterm.Info.Println("Running sap crypto downloader")
 
 		// lets see if we cannot use gh token and keep it for sign
 		// TODO Remove this
@@ -179,7 +179,7 @@ var installCmd = &cobra.Command{
 			verifySigning.Success()
 		}
 
-		pterm.Info.Println("gitz will now handover to script execution of: " + scriptPrettyName)
+		pterm.Info.Println("sap will now handover to script execution of: " + scriptPrettyName)
 
 		// Execute the script in question
 		fmt.Println("")
