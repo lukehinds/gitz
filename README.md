@@ -12,6 +12,20 @@ It neatly maps the script, signature and public key using the commit sha.
 gitz will also perform a verification of the signature and public key against
 the commit sha when running the `install` command.
 
-## Usage
+## Sign
 
-TBC
+Create a new github token and export it as an environment variable
+
+```bash
+export GITHUB_AUTH_TOKEN="your-token"
+```
+
+```bash
+gitz sign --script path/to/script.sh --owner jdoe --repo myrepo --author-email jdoe@example.com --author-name jdoe --base-branch main --commit-branch pr-branch --commit-message "Pusshing new script" --pr-text "New script revision" --pr-title "New Script changes"
+```
+
+# Install
+
+```bash
+gitz sign --script path/to/script.sh --owner jdoe --repo myrepo script.sh
+```
