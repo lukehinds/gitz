@@ -33,9 +33,9 @@ var (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:   "gitz",
-	Short: "gitz, secure script signing and retrieval",
-	Long: `gitz is a tool for signing scripts and retrieving them from a remote repository.`,
+	Use:   "sap",
+	Short: "sap, secure script signing and retrieval",
+	Long:  `sap is a tool for signing scripts and retrieving them from a remote repository.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -52,7 +52,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.gitz.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.sap.yaml)")
 	rootCmd.PersistentFlags().StringVar(&owner, "owner", "", "The owner (username or organization containing the repo")
 	rootCmd.PersistentFlags().StringVar(&repo, "repo", "", "The GitHub repository")
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
@@ -75,9 +75,9 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// Search config in home directory with name ".gitz" (without extension).
+		// Search config in home directory with name ".sap" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".gitz")
+		viper.SetConfigName(".sap")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

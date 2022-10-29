@@ -16,9 +16,9 @@
 package cmd
 
 import (
-	"encoding/base64"
 	"context"
 	"crypto/x509"
+	"encoding/base64"
 	"encoding/pem"
 	"errors"
 	"fmt"
@@ -29,8 +29,8 @@ import (
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/go-github/v35/github"
-	"github.com/lukehinds/gitz/pkg/githubapi"
-	"github.com/lukehinds/gitz/pkg/utils"
+	"github.com/lukehinds/sap/pkg/githubapi"
+	"github.com/lukehinds/sap/pkg/utils"
 	"github.com/sigstore/sigstore/pkg/generated/client/operations"
 	"github.com/sigstore/sigstore/pkg/httpclients"
 	"github.com/sigstore/sigstore/pkg/oauthflow"
@@ -55,8 +55,8 @@ var supportedFileTypes = map[string]struct{}{
 // signCmd represents the sign command
 var signCmd = &cobra.Command{
 	Use:   "sign",
-	Short: "Sign a script using gitz",
-	Long: `Sign a script using gitz and store within a GitHub repository.`,
+	Short: "Sign a script using sap",
+	Long:  `Sign a script using sap and store within a GitHub repository.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		now := time.Now()
 		timeStamp := strconv.FormatInt(now.UnixNano(), 10)
@@ -174,7 +174,6 @@ var signCmd = &cobra.Command{
 		// dump signature to file
 		sigFile := fmt.Sprintf("%s/signature_%s.bin", storeDir, timeStamp)
 		fulcioCert := fmt.Sprintf("%s/fulcio_cert_%s.pem", storeDir, timeStamp)
-
 
 		// convert signature to base64
 		sigBase64 := base64.StdEncoding.EncodeToString(signature)

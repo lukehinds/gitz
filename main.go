@@ -15,7 +15,7 @@
 
 package main
 
-import "github.com/lukehinds/gitz/cmd"
+import "github.com/lukehinds/sap/cmd"
 
 func main() {
 	cmd.Execute()
