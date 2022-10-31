@@ -24,7 +24,6 @@ import (
 	"encoding/pem"
 	"fmt"
 	"io"
-	"log"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -59,7 +58,7 @@ var installCmd = &cobra.Command{
 		// TODO Remove this
 		token := os.Getenv("GITHUB_AUTH_TOKEN")
 		if token == "" {
-			log.Fatal("unauthorized: No token present")
+			fmt.Printf("unauthorized: No token present")
 		}
 		ts := oauth2.StaticTokenSource(
 			&oauth2.Token{AccessToken: token},
@@ -77,7 +76,7 @@ var installCmd = &cobra.Command{
 		// Get the latest release tag
 		getLatestRelease, getLatestReleaseResp, err := ghClient.Repositories.GetLatestRelease(ctx, owner, repo)
 		if err != nil {
-			fmt.Errorf("Repositories.GetLatestRelease returned error: %v\n%v", err, getLatestReleaseResp.Body)
+			fmt.Printf("Repositories.GetLatestRelease returned error: %v\n%v", err, getLatestReleaseResp.Body)
 		}
 
 		switch getLatestReleaseResp.StatusCode {
@@ -89,7 +88,7 @@ var installCmd = &cobra.Command{
 		// Get the sha for the latest release commit
 		release, resp, err := ghClient.Repositories.GetReleaseByTag(ctx, owner, repo, *getLatestRelease.TagName)
 		if err != nil {
-			fmt.Errorf("Repositories.GetReleaseByTag returned error: %v\n%v", err, resp.Body)
+			fmt.Printf("Repositories.GetReleaseByTag returned error: %v\n%v", err, resp.Body)
 		}
 
 		// get the commit that was used as a tag against the release, this then allows us to iterate
@@ -134,7 +133,7 @@ var installCmd = &cobra.Command{
 
 		certFile, err := utils.ReadFile(certName)
 		if err != nil {
-			log.Fatal("certfile read error: ", err)
+			fmt.Printf("certfile read error: %s ", err)
 		}
 
 		// Extract the public key from the signing cert as we need this to verify
@@ -147,7 +146,7 @@ var installCmd = &cobra.Command{
 		hash := sha256.New()
 		in, err := os.Open(scriptName)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Printf("failed to open: %s", err)
 		}
 		defer in.Close()
 		io.Copy(hash, in)
@@ -155,7 +154,7 @@ var installCmd = &cobra.Command{
 		// Read in the signature file
 		raw, err := os.ReadFile(sigName)
 		if err != nil {
-			log.Fatalf("failed to read sig from %s: %s", "signature.bin", err)
+			fmt.Printf("failed to read sig from %s: %s", "signature.bin", err)
 		}
 
 		sigDecode, _ := base64.StdEncoding.DecodeString(string(raw))
@@ -164,11 +163,11 @@ var installCmd = &cobra.Command{
 		sig := &ecdsaSig{}
 		_, err = asn1.Unmarshal(sigDecode, sig)
 		if err != nil {
-			log.Fatalf("invalid signature data")
+			fmt.Printf("invalid signature data")
 		}
 
 		if sig.R.Sign() <= 0 || sig.S.Sign() <= 0 {
-			log.Fatalf("signature contained zero or negative values")
+			fmt.Printf("signature contained zero or negative values")
 		}
 
 		// Verify the actual signature signing, if verify fails exit with a failure code
@@ -185,7 +184,7 @@ var installCmd = &cobra.Command{
 		fmt.Println("")
 		err = utils.ExecScript(scriptName)
 		if err != nil {
-			log.Fatal(err)
+			fmt.Printf("error executing: %s %s", scriptName, err)
 		}
 		// TODO: clean up by removing all files in temp directory
 	},
